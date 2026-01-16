@@ -1,4 +1,4 @@
-#define SDL_MAIN_USE_CALLBACKS  // This is necessary for the new callbacks API. To use the legacy API, don't define this. 
+#define SDL_MAIN_USE_CALLBACKS  // This is necessary for the new callbacks API. To use the legacy API, don't define this.
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_init.h>
@@ -33,30 +33,30 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     if (not SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
         return SDL_Fail();
     }
-    
+
     // init TTF
     if (not TTF_Init()) {
         return SDL_Fail();
     }
-    
+
     // init Mixer
     if (not MIX_Init()) {
         return SDL_Fail();
     }
-    
+
     // create a window
-   
+
     SDL_Window* window = SDL_CreateWindow("SDL Minimal Sample", windowStartWidth, windowStartHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
     if (not window){
         return SDL_Fail();
     }
-    
+
     // create a renderer
     SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
     if (not renderer){
         return SDL_Fail();
     }
-    
+
     // load the font
 #if __ANDROID__
     std::filesystem::path basePath = "";   // on Android we do not want to use basepath. Instead, assets are available at the root directory.
@@ -89,7 +89,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     auto svg_surface = IMG_Load((basePath / "gs_tiger.svg").string().c_str());
     SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, svg_surface);
     SDL_DestroySurface(svg_surface);
-    
+
 
     // get the on-screen dimensions of the text. this is necessary for rendering it
     auto messageTexProps = SDL_GetTextureProperties(messageTex);
@@ -105,7 +105,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     if (mixer == nullptr) {
         return SDL_Fail();
     }
-    
+
     auto mixerTrack = MIX_CreateTrack(mixer);
 
     // load the music
@@ -118,7 +118,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     // play the music (does not loop)
     MIX_SetTrackAudio(mixerTrack, music);
     MIX_PlayTrack(mixerTrack, NULL);
-    
+
     // print some information about the window
     SDL_ShowWindow(window);
     {
@@ -141,9 +141,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
        .messageDest = text_rect,
        .track = mixerTrack,
     };
-    
+
     SDL_SetRenderVSync(renderer, -1);   // enable vysnc
-    
+
     SDL_Log("Application started successfully!");
 
     return SDL_APP_CONTINUE;
@@ -151,7 +151,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event* event) {
     auto* app = (AppContext*)appstate;
-    
+
     if (event->type == SDL_EVENT_QUIT) {
         app->app_quit = SDL_APP_SUCCESS;
     }
@@ -167,7 +167,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     auto red = (std::sin(time) + 1) / 2.0 * 255;
     auto green = (std::sin(time / 2) + 1) / 2.0 * 255;
     auto blue = (std::sin(time) * 2 + 1) / 2.0 * 255;
-    
+
     SDL_SetRenderDrawColor(app->renderer, red, green, blue, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(app->renderer);
 
@@ -185,7 +185,7 @@ void SDL_AppQuit(void* appstate, SDL_AppResult result) {
     if (app) {
         SDL_DestroyRenderer(app->renderer);
         SDL_DestroyWindow(app->window);
-        
+
         // prevent the music from abruptly ending.
         MIX_StopTrack(app->track, MIX_TrackMSToFrames(app->track, 1000));
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
