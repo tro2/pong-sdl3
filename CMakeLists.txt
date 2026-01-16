@@ -23,7 +23,6 @@ add_executable(${EXECUTABLE_NAME})
 target_sources(${EXECUTABLE_NAME}
 PRIVATE
     src/main.cpp
-    src/iosLaunchScreen.storyboard
 )
 
 # Set C++ version
