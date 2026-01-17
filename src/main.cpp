@@ -2,21 +2,12 @@
 #include <SDL3/SDL_main.h>
 
 #include <cstdlib>
-#include <string>
 
-#include "SDL3/SDL_error.h"
-#include "SDL3/SDL_events.h"
-#include "SDL3/SDL_init.h"
-#include "SDL3/SDL_oldnames.h"
-#include "SDL3/SDL_surface.h"
-#include "SDL3/SDL_video.h"
+#include "gameConstants.h"
 
-constexpr int kScreenWidth{640};
-constexpr int kScreenHeight{480};
+bool initializeGame();
 
-bool initialize_game();
-
-void close_game();
+void closeGame();
 
 /* Globals */
 // Render window
@@ -26,7 +17,9 @@ SDL_Window* gWindow{nullptr};
 SDL_Surface* gScreenSurface{nullptr};
 
 int main(int argc, char* args[]) {
-    if (not initialize_game()) {
+    SDL_Log("Application launched.\n");
+
+    if (not initializeGame()) {
         SDL_Log("Unable to initialize game!\n");
         return EXIT_FAILURE;
     }
@@ -54,27 +47,32 @@ int main(int argc, char* args[]) {
         }
     }
 
-    close_game();
+    closeGame();
     return EXIT_SUCCESS;
 }
 
-bool initialize_game() {
+bool initializeGame() {
+    SDL_Log("Application initializing...\n");
+
     if (not SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL could not initialize! SDL error: %s\n", SDL_GetError());
         return false;
     }
 
-    gWindow = SDL_CreateWindow("Pong", kScreenWidth, kScreenHeight, 0);
+    gWindow = SDL_CreateWindow("Pong", SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     if (not gWindow) {
         SDL_Log("Error creating window. SDL error: %s\n", SDL_GetError());
         return false;
     }
 
     gScreenSurface = SDL_GetWindowSurface(gWindow);
+    SDL_Log("Application initialized!\n");
     return true;
 }
 
-void close_game() {
+void closeGame() {
+    SDL_Log("Application closing.\n");
+
     SDL_DestroyWindow(gWindow);
     gWindow = nullptr;
     gScreenSurface = nullptr;

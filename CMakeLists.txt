@@ -25,6 +25,11 @@ PRIVATE
     src/main.cpp
 )
 
+target_include_directories(${EXECUTABLE_NAME}
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
 # Set C++ version
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_20)
 
