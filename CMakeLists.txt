@@ -77,12 +77,12 @@ macro(copy_helper filename)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/src/${filename}" "${outname}"
     )
 endmacro()
-copy_helper("Inter-VariableFont.ttf")
-copy_helper("the_entertainer.ogg")
-copy_helper("gs_tiger.svg")
+# copy_helper("Inter-VariableFont.ttf")
+# copy_helper("the_entertainer.ogg")
+# copy_helper("gs_tiger.svg")
 
 # set some extra configs for each platform
-set(RESOURCE_FILES "src/logo.png")
+# set(RESOURCE_FILES "src/logo.png")
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     RESOURCE "${RESOURCE_FILES}"
