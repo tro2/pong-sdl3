@@ -3,7 +3,10 @@
 
 #include <cstdlib>
 
-#include "gameConstants.h"
+#include "SDL3/SDL_oldnames.h"
+#include "SDL3/SDL_render.h"
+#include "gameConstants.hpp"
+#include "gameRect.hpp"
 
 bool initializeGame();
 
@@ -11,10 +14,10 @@ void closeGame();
 
 /* Globals */
 // Render window
-SDL_Window* gWindow{nullptr};
+SDL_Window* gameWindow{nullptr};
 
 // Window surface
-SDL_Surface* gScreenSurface{nullptr};
+SDL_Renderer* gameRenderer{nullptr};
 
 int main(int argc, char* args[]) {
     SDL_Log("Application launched.\n");
@@ -31,6 +34,9 @@ int main(int argc, char* args[]) {
     SDL_Event currEvent;
     SDL_zero(currEvent);
 
+    // Display box
+    GameRect box{{0, 0, 100, 100}, {0, 0, 0, 255}};
+
     // main loop
     while (not quit) {
         while (SDL_PollEvent(&currEvent)) {
@@ -38,12 +44,18 @@ int main(int argc, char* args[]) {
                 quit = true;
             }
 
-            // Make surface white
-            SDL_FillSurfaceRect(
-                gScreenSurface, nullptr,
-                SDL_MapSurfaceRGB(gScreenSurface, 0xFF, 0xFF, 0xFF));
+            // Fill the background white
+            SDL_SetRenderDrawColor(gameRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(gameRenderer);
 
-            SDL_UpdateWindowSurface(gWindow);
+            // Draw box
+            const auto [r, g, b, a] = box.getColor();
+            SDL_SetRenderDrawColor(gameRenderer, r, g, b, a);
+            SDL_RenderRect(gameRenderer, &box.getRect());
+            SDL_RenderFillRect(gameRenderer, &box.getRect());
+
+            // Update screen
+            SDL_RenderPresent(gameRenderer);
         }
     }
 
@@ -59,13 +71,11 @@ bool initializeGame() {
         return false;
     }
 
-    gWindow = SDL_CreateWindow("Pong", SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-    if (not gWindow) {
-        SDL_Log("Error creating window. SDL error: %s\n", SDL_GetError());
+    if (not SDL_CreateWindowAndRenderer("Pong", SCREEN_WIDTH, SCREEN_HEIGHT, 0, &gameWindow, &gameRenderer)) {
+        SDL_Log("Error creating window and renderer. SDL error: %s\n", SDL_GetError());
         return false;
     }
 
-    gScreenSurface = SDL_GetWindowSurface(gWindow);
     SDL_Log("Application initialized!\n");
     return true;
 }
@@ -73,9 +83,10 @@ bool initializeGame() {
 void closeGame() {
     SDL_Log("Application closing.\n");
 
-    SDL_DestroyWindow(gWindow);
-    gWindow = nullptr;
-    gScreenSurface = nullptr;
+    SDL_DestroyRenderer(gameRenderer);
+    gameRenderer = nullptr;
+    SDL_DestroyWindow(gameWindow);
+    gameWindow = nullptr;
 
     SDL_Quit();
 }
